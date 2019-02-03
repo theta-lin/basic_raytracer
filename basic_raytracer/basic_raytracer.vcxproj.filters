@@ -18,9 +18,21 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="util.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vec.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="object.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="util.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

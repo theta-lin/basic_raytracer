@@ -7,8 +7,8 @@
 
 void render()
 {
-	const size_t width{1920};
-	const size_t height{1080};
+	const size_t width{1024};
+	const size_t height{768};
 	const std::string filename{"out.ppm"};
 	
 	std::vector<Vec3f> buffer(width * height);
