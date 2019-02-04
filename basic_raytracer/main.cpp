@@ -46,8 +46,8 @@ void render(const std::vector<std::unique_ptr<Object> > &objects)
 		{
 			// set the camera at the origin
 			// screen at z = 1
-			float x{2.f * (j + 0.5f) / static_cast<float>(width) * tan(fov * 0.5f)};
-			float y{2.f * (i + 0.5f) / static_cast<float>(height) * tan(fov * 0.5f)
+			float x{(2.f * (j + 0.5f) / static_cast<float>(width) - 1.f) * tan(fov * 0.5f)};
+			float y{(2.f * (i + 0.5f) / static_cast<float>(height) - 1.f) * tan(fov * 0.5f)
 				    * height / static_cast<float>(width)};
 			Vec3f dir{x, y, 1};
 			buffer[i * width + j] = sceneIntersect({0, 0, 0}, normalize(dir), objects);
@@ -70,9 +70,9 @@ int main()
 	const Material orange{{0.9f, 0.7f, 0.f}};
 	const Material lapis{{0.f, 0.4f, 1.f}};
 	std::vector<std::unique_ptr<Object> > objects;
-	objects.push_back(std::make_unique<Sphere>(Vec3f{70.f, 40.f, 120.f}, 20.f, orange));
-	objects.push_back(std::make_unique<Sphere>(Vec3f{300.f, 200.f, 200.f}, 20.f, orange));
-	objects.push_back(std::make_unique<Sphere>(Vec3f{12.f, 20.f, 20.f}, 4.f, lapis));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{0.f, 0.f, 120.f}, 20.f, orange));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{-100.f, -30.f, 200.f}, 20.f, orange));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{10.f, 8.f, 20.f}, 4.f, lapis));
 	render(objects);
 	return 0;
 }
