@@ -17,6 +17,7 @@ private:
 	float radius;
 
 public:
+	Sphere(const Vec3f &newCenter, const float newRadius);
 	bool intersect(const Vec3f &origin, const Vec3f &dir, float &t0) const override;
 };
 

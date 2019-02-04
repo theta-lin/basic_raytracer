@@ -1,5 +1,10 @@
 #include "object.hpp"
 
+Sphere::Sphere(const Vec3f & newCenter, const float newRadius)
+	: center{newCenter}, radius{newRadius}
+{
+}
+
 bool Sphere::intersect(const Vec3f &origin, const Vec3f &dir, float &t0) const
 {
 	Vec3f l{center - origin};
