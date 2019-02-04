@@ -36,3 +36,13 @@ bool Sphere::intersect(const Vec3f &origin, const Vec3f &dir, float &t0) const
 
 	return true;
 }
+
+Vec3f Sphere::normal(const Vec3f &point) const
+{
+	return normalize(point - center);
+}
+
+Light::Light(const Vec3f &newPosition, const float newIntersity)
+	: position{newPosition}, intensity{newIntersity}
+{
+}

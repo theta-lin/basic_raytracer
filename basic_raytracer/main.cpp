@@ -10,29 +10,46 @@
 #include "object.hpp"
 
 Vec3f sceneIntersect(const Vec3f &origin, const Vec3f &dir,
-	const std::vector<std::unique_ptr<Object> > &objects)
+	const std::vector<std::unique_ptr<Object> > &objects,
+	const std::vector<std::unique_ptr<Light> > &lights)
 {
 	const float maxDist{2048.f};
 	float dist{std::numeric_limits<float>::max()};
 	Material material{};
-	
-	for (const std::unique_ptr<Object> &object : objects)
+	Vec3f hit{};
+	Vec3f normal{};
+
+	for (const auto &object : objects)
 	{
 		float newDist;
 		if (object->intersect(origin, dir, newDist) && newDist < dist)
 		{
 			dist = newDist;
 			material = object->material;
+			hit = origin + dir * dist;
+			normal = object->normal(hit);
 		}
 	}
 
 	if (dist > maxDist)
+	{
 		return {0.2f, 0.2f, 0.2f};
+	}
 	else
-		return material.diffuse;
+	{
+		float diffuseIntensity{0.f};
+		for (const auto &light : lights)
+		{
+			Vec3f lightDir{normalize(light->position - hit)};
+			diffuseIntensity += light->intensity * std::max(0.f, dot(normal, lightDir));
+		}
+
+		return material.diffuse * diffuseIntensity;
+	}
 }
 
-void render(const std::vector<std::unique_ptr<Object> > &objects)
+void render(const std::vector<std::unique_ptr<Object> > &objects,
+	const std::vector<std::unique_ptr<Light> > &lights)
 {
 	const size_t width{1024};
 	const size_t height{768};
@@ -50,7 +67,7 @@ void render(const std::vector<std::unique_ptr<Object> > &objects)
 			float y{(2.f * (i + 0.5f) / static_cast<float>(height) - 1.f) * tan(fov * 0.5f)
 				    * height / static_cast<float>(width)};
 			Vec3f dir{x, y, 1};
-			buffer[i * width + j] = sceneIntersect({0, 0, 0}, normalize(dir), objects);
+			buffer[i * width + j] = sceneIntersect({0, 0, 0}, normalize(dir), objects, lights);
 		}
 	}
 
@@ -67,12 +84,16 @@ void render(const std::vector<std::unique_ptr<Object> > &objects)
 
 int main()
 {
-	const Material orange{{0.9f, 0.7f, 0.f}};
-	const Material lapis{{0.f, 0.4f, 1.f}};
+	const Material orange{{0.6f, 0.3f, 0.f}};
+	const Material lapis{{0.f, 0.3f, 0.6f}};
 	std::vector<std::unique_ptr<Object> > objects;
-	objects.push_back(std::make_unique<Sphere>(Vec3f{0.f, 0.f, 120.f}, 20.f, orange));
-	objects.push_back(std::make_unique<Sphere>(Vec3f{-100.f, -30.f, 200.f}, 20.f, orange));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{0.f, 0.f, 30.f}, 7.f, orange));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{-20.f, -20.f, 50.f}, 9.f, orange));
 	objects.push_back(std::make_unique<Sphere>(Vec3f{10.f, 8.f, 20.f}, 4.f, lapis));
-	render(objects);
+
+	std::vector<std::unique_ptr<Light> > lights;
+	lights.push_back(std::make_unique<Light>(Vec3f{2.f, 2.f, -20.f}, 1.5f));
+
+	render(objects, lights);
 	return 0;
 }
