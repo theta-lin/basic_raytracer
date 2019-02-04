@@ -4,9 +4,21 @@
 #include <cmath>
 #include "vec.hpp"
 
+class Material
+{
+public:
+	Vec3f diffuse;
+	Material();
+	Material(const Vec3f &newDiffuse);
+};
+
 class Object
 {
 public:
+	Material material;
+
+public:
+	Object(const Material &newMaterial);
 	virtual bool intersect(const Vec3f &origin, const Vec3f &dir, float &t0) const = 0;
 };
 
@@ -17,7 +29,7 @@ private:
 	float radius;
 
 public:
-	Sphere(const Vec3f &newCenter, const float newRadius);
+	Sphere(const Vec3f &newCenter, const float newRadius, const Material &newMaterial);
 	bool intersect(const Vec3f &origin, const Vec3f &dir, float &t0) const override;
 };
 

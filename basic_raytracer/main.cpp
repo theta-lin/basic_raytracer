@@ -5,19 +5,34 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <memory>
 #include "vec.hpp"
 #include "object.hpp"
 
-Vec3f trace(const Vec3f &origin, const Vec3f &dir, const Sphere &sphere)
+Vec3f sceneIntersect(const Vec3f &origin, const Vec3f &dir,
+	const std::vector<std::unique_ptr<Object> > &objects)
 {
+	const float maxDist{2048.f};
 	float dist{std::numeric_limits<float>::max()};
-	if (sphere.intersect(origin, dir, dist))
-		return {0.9f, 0.7f, 0.f};
-	else
+	Material material{};
+	
+	for (const std::unique_ptr<Object> &object : objects)
+	{
+		float newDist;
+		if (object->intersect(origin, dir, newDist) && newDist < dist)
+		{
+			dist = newDist;
+			material = object->material;
+		}
+	}
+
+	if (dist > maxDist)
 		return {0.2f, 0.2f, 0.2f};
+	else
+		return material.diffuse;
 }
 
-void render()
+void render(const std::vector<std::unique_ptr<Object> > &objects)
 {
 	const size_t width{1024};
 	const size_t height{768};
@@ -25,7 +40,6 @@ void render()
 	const float fov{1.6f};
 	
 	std::vector<Vec3f> buffer(width * height);
-	Sphere sphere{{70.f, -40.f, 120.f}, 20.f};
 	for (size_t i{0}; i < height; ++i)
 	{
 		for (size_t j{0}; j < width; ++j)
@@ -33,10 +47,10 @@ void render()
 			// set the camera at the origin
 			// screen at z = 1
 			float x{2.f * (j + 0.5f) / static_cast<float>(width) * tan(fov * 0.5f)};
-			float y{-2.f * (i + 0.5f) / static_cast<float>(height) * tan(fov * 0.5f)
+			float y{2.f * (i + 0.5f) / static_cast<float>(height) * tan(fov * 0.5f)
 				    * height / static_cast<float>(width)};
 			Vec3f dir{x, y, 1};
-			buffer[i * width + j] = trace({0, 0, 0}, normalize(dir), sphere);
+			buffer[i * width + j] = sceneIntersect({0, 0, 0}, normalize(dir), objects);
 		}
 	}
 
@@ -53,6 +67,12 @@ void render()
 
 int main()
 {
-	render();
+	const Material orange{{0.9f, 0.7f, 0.f}};
+	const Material lapis{{0.f, 0.4f, 1.f}};
+	std::vector<std::unique_ptr<Object> > objects;
+	objects.push_back(std::make_unique<Sphere>(Vec3f{70.f, 40.f, 120.f}, 20.f, orange));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{300.f, 200.f, 200.f}, 20.f, orange));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{12.f, 20.f, 20.f}, 4.f, lapis));
+	render(objects);
 	return 0;
 }

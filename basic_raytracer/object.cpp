@@ -1,7 +1,19 @@
 #include "object.hpp"
 
-Sphere::Sphere(const Vec3f & newCenter, const float newRadius)
-	: center{newCenter}, radius{newRadius}
+Material::Material()
+{
+}
+
+Material::Material(const Vec3f &newDiffuse) : diffuse{newDiffuse}
+{
+}
+
+Object::Object(const Material &newMaterial) : material{newMaterial}
+{
+}
+
+Sphere::Sphere(const Vec3f &newCenter, const float newRadius, const Material &newMaterial)
+	: Object{newMaterial}, center{newCenter}, radius{newRadius}
 {
 }
 
