@@ -1,10 +1,11 @@
 #ifndef VEC_HPP
 #define VEC_HPP
 
+#include <iostream>
+#include <cmath>
 #include <cstring>
 #include <cassert>
 #include <initializer_list>
-#include "util.hpp"
 
 template<size_t size, typename T>
 class Vec
@@ -63,6 +64,17 @@ public:
 			data[i] *= scalar;
 		}
 	}
+
+	void operator/=(const T &scalar)
+	{
+		for (size_t i{0}; i < size; ++i)
+		{
+			data[i] /= scalar;
+		}
+	}
+
+	T norm() const { return std::sqrtf(dot(*this, *this)); }
+	Vec<size, T> normalize() const { return *this / norm(); }
 };
 
 template<size_t size, typename T>
@@ -96,6 +108,25 @@ Vec<size, T> operator*(const T &scalar, const Vec<size, T> &v)
 }
 
 template<size_t size, typename T>
+Vec<size, T> operator/(const Vec<size, T> &v, const T &scalar)
+{
+	Vec<size, T> temp{v};
+	temp /= scalar;
+	return temp;
+}
+
+template<size_t size, typename T>
+std::ostream& operator<<(std::ostream &out, const Vec<size, T> &v)
+{
+	out << '(';
+	for (int i{0}; i < size - 1; ++i)
+		out << v[i] << ',';
+	out << v[size - 1];
+	out << ')';
+	return out;
+}
+
+template<size_t size, typename T>
 T dot(const Vec<size, T> &v0, const Vec<size, T> &v1)
 {
 	T product{};
@@ -110,12 +141,6 @@ Vec<3, T> cross(const Vec<3, T> &v0, const Vec<3, T> &v1)
 	return {v0[1] * v1[2] - v0[2] * v1[1],
 			v0[2] * v1[0] - v0[0] * v1[2],
 			v0[0] * v1[1] - v0[1] * v0[0]};
-}
-
-template<size_t size>
-Vec<size, float> normalize(const Vec<size, float> &v)
-{
-	return v * fInvSqrt(dot(v, v));
 }
 
 // incident is from hit point to light source

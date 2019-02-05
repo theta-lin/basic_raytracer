@@ -41,7 +41,7 @@ bool Sphere::intersect(const Vec3f &origin, const Vec3f &dir, float &t0) const
 
 Vec3f Sphere::normal(const Vec3f &point) const
 {
-	return normalize(point - center);
+	return (point - center).normalize();
 }
 
 Light::Light(const Vec3f &newPosition, const float newIntersity)
