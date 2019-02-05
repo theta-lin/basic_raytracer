@@ -143,15 +143,12 @@ Vec<3, T> cross(const Vec<3, T> &v0, const Vec<3, T> &v1)
 			v0[0] * v1[1] - v0[1] * v0[0]};
 }
 
-// incident is from hit point to light source
-// reflected is from camera to hit point
 template<size_t size, typename T>
 Vec<size, T> reflect(const Vec<size, T> &incident, const Vec<size, T> &normal)
 {
 	return incident - 2.f * normal * dot(incident, normal);
 }
 
-using Vec2f = Vec<2, float>;
 using Vec3f = Vec<3, float>;
 
 #endif

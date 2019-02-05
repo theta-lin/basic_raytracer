@@ -1,11 +1,11 @@
 #include "object.hpp"
 
 Material::Material()
-	: albedo{1, 0}, diffuse{}, specularExp{}
+	: albedo{1, 0, 0}, diffuse{}, specularExp{}
 {
 }
 
-Material::Material(const Vec2f &newAlbedo, const Vec3f &newDiffuse, const float newSpecularExp)
+Material::Material(const Vec3f &newAlbedo, const Vec3f &newDiffuse, const float newSpecularExp)
 	: albedo{newAlbedo}, diffuse{newDiffuse}, specularExp{newSpecularExp}
 {
 }
