@@ -37,14 +37,17 @@ Vec3f sceneIntersect(const Vec3f &origin, const Vec3f &dir,
 	}
 	else
 	{
-		float diffuseIntensity{0.f};
+		float diffuseIntensity{0.f}, specularIntensity{0.f};
 		for (const auto &light : lights)
 		{
 			Vec3f lightDir{normalize(light->position - hit)};
 			diffuseIntensity += light->intensity * std::max(0.f, dot(normal, lightDir));
+			specularIntensity += std::powf(std::max(0.f, dot(reflect(lightDir, normal), dir)),
+			                     material.specularExp) * light->intensity;
 		}
 
-		return material.diffuse * diffuseIntensity;
+		return material.diffuse * diffuseIntensity * material.albedo[0]
+			+ Vec3f{1.f, 1.f, 1.f} * specularIntensity * material.albedo[1];
 	}
 }
 
@@ -84,15 +87,17 @@ void render(const std::vector<std::unique_ptr<Object> > &objects,
 
 int main()
 {
-	const Material orange{{0.6f, 0.3f, 0.f}};
-	const Material lapis{{0.f, 0.3f, 0.6f}};
+	const Material orange{{0.9f, 0.1f}, {0.4f, 0.25f, 0.f}, 10.f};
+	const Material lapis{{0.4f, 0.5f}, {0.f, 0.15f, 0.4f}, 50.f};
 	std::vector<std::unique_ptr<Object> > objects;
 	objects.push_back(std::make_unique<Sphere>(Vec3f{0.f, 0.f, 30.f}, 7.f, orange));
-	objects.push_back(std::make_unique<Sphere>(Vec3f{-20.f, -20.f, 50.f}, 9.f, orange));
-	objects.push_back(std::make_unique<Sphere>(Vec3f{10.f, 8.f, 20.f}, 4.f, lapis));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{-6.f, 6.f, 35.f}, 5.f, lapis));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{-12.f, -12.f, 32.f}, 9.f, orange));
+	objects.push_back(std::make_unique<Sphere>(Vec3f{10.f, 6.f, 23.f}, 4.f, lapis));
 
 	std::vector<std::unique_ptr<Light> > lights;
-	lights.push_back(std::make_unique<Light>(Vec3f{2.f, 2.f, -20.f}, 1.5f));
+	lights.push_back(std::make_unique<Light>(Vec3f{2.f, 2.f, -20.f}, 3.f));
+	lights.push_back(std::make_unique<Light>(Vec3f{20.f, 10.f, 20.f}, 1.f));
 
 	render(objects, lights);
 	return 0;

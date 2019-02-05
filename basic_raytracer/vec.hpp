@@ -31,7 +31,15 @@ public:
 
 	T& operator[](const size_t index) { return data[index]; }
 	const T& operator[](const size_t index) const { return data[index]; }
-	
+
+	Vec<size, T> operator-()
+	{
+		Vec<size, T> temp{};
+		for (int i{0}; i < size; ++i)
+			temp[i] = -data[i];
+		return temp;
+	}
+
 	void operator+=(const Vec &v)
 	{
 		for (size_t i{0}; i < size; ++i)
@@ -69,7 +77,7 @@ template<size_t size, typename T>
 Vec<size, T> operator-(const Vec<size, T> &v0, const Vec<size, T> &v1)
 {
 	Vec<size, T> temp{v0};
-	temp += v1;
+	temp -= v1;
 	return temp;
 }
 
@@ -110,6 +118,15 @@ Vec<size, float> normalize(const Vec<size, float> &v)
 	return v * fInvSqrt(dot(v, v));
 }
 
+// incident is from hit point to light source
+// reflected is from camera to hit point
+template<size_t size, typename T>
+Vec<size, T> reflect(const Vec<size, T> &incident, const Vec<size, T> &normal)
+{
+	return incident - 2.f * normal * dot(incident, normal);
+}
+
+using Vec2f = Vec<2, float>;
 using Vec3f = Vec<3, float>;
 
 #endif
