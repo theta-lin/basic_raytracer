@@ -37,7 +37,6 @@ Vec3f castRay(const Vec3f &origin, const Vec3f &dir,
 	const size_t depth = 0)
 {
 	const size_t maxDepth{5};
-	const float epsilon{1e-3f};
 
 	Material material;
 	Vec3f hit;
@@ -46,8 +45,11 @@ Vec3f castRay(const Vec3f &origin, const Vec3f &dir,
 	if (depth < maxDepth && sceneIntersect(origin, dir, objects, material, hit, normal))
 	{
 		Vec3f reflectDir{reflect(dir, normal)};
+		Vec3f refractDir{refract(dir, normal, material.refractiveIdx)};
 		Vec3f reflectOrigin{dot(normal, reflectDir) < 0 ? hit - normal * epsilon : hit + normal * epsilon};
+		Vec3f refractOrigin{dot(normal, reflectDir) < 0 ? hit - normal * epsilon : hit + normal * epsilon};
 		Vec3f reflectColor{castRay(reflectOrigin, reflectDir, objects, lights, depth + 1)};
+		Vec3f refractColor{castRay(refractOrigin, refractDir, objects, lights, depth + 1)};
 
 		float diffuseIntensity{0.f}, specularIntensity{0.f};
 		for (const auto &light : lights)
@@ -70,11 +72,12 @@ Vec3f castRay(const Vec3f &origin, const Vec3f &dir,
 
 		return material.diffuse * diffuseIntensity * material.albedo[0]
 			+ Vec3f{1.f, 1.f, 1.f} * specularIntensity * material.albedo[1]
-			+ reflectColor * material.albedo[2];
+			+ reflectColor * material.albedo[2] + refractColor * material.albedo[3];
 	}
 	else
 	{
-		return {0.2f, 0.2f, 0.2f};
+		return (static_cast<int>(dir[0] * 5) + static_cast<int>(dir[1] * 5)) & 1
+			? Vec3f{0.2f, 0.2f, 0.2f} : Vec3f{0.3f, 0.3f, 0.3f};
 	}
 }
 
@@ -114,9 +117,9 @@ void render(const std::vector<std::unique_ptr<Object> > &objects,
 
 int main()
 {
-	const Material orange{{0.9f, 0.1f, 0.05f}, {0.4f, 0.25f, 0.f}, 10.f};
-	const Material lapis{{0.4f, 0.5f, 0.2f}, {0.f, 0.15f, 0.4f}, 50.f};
-	const Material diamond{{0.05f, 1.f, 0.7f}, {0.5f, 0.8f, 1.f}, 1000.f};
+	const Material orange{{0.9f, 0.1f, 0.05f, 0.f}, {0.4f, 0.25f, 0.f}, 10.f, 1.f};
+	const Material lapis{{0.3f, 0.6f, 0.2f, 0.2f}, {0.f, 0.15f, 0.4f}, 50.f, 1.5f};
+	const Material diamond{{0.03f, 0.4f, 0.4f, 0.6f}, {0.f, 0.4f, 0.8f}, 1000.f, 2.5f};
 	std::vector<std::unique_ptr<Object> > objects;
 	objects.push_back(std::make_unique<Sphere>(Vec3f{0.f, 0.f, 32.f}, 10.f, orange));
 	objects.push_back(std::make_unique<Sphere>(Vec3f{-3.f, 5.f, 20.f}, 5.f, diamond));

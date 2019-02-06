@@ -1,11 +1,14 @@
 #ifndef VEC_HPP
 #define VEC_HPP
 
-#include <iostream>
 #include <cmath>
 #include <cstring>
 #include <cassert>
+#include <iostream>
+#include <algorithm>
 #include <initializer_list>
+
+const float epsilon{1e-3f};
 
 template<size_t size, typename T>
 class Vec
@@ -143,12 +146,10 @@ Vec<3, T> cross(const Vec<3, T> &v0, const Vec<3, T> &v1)
 			v0[0] * v1[1] - v0[1] * v0[0]};
 }
 
-template<size_t size, typename T>
-Vec<size, T> reflect(const Vec<size, T> &incident, const Vec<size, T> &normal)
-{
-	return incident - 2.f * normal * dot(incident, normal);
-}
-
 using Vec3f = Vec<3, float>;
+using Vec4f = Vec<4, float>;
+
+Vec3f reflect(const Vec3f &incident, const Vec3f &normal);
+Vec3f refract(const Vec3f &incident, const Vec3f &normal, const float refrativeIdex);
 
 #endif

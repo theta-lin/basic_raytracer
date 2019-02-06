@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="vec.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="object.hpp" />

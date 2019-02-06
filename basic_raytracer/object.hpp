@@ -7,11 +7,13 @@
 class Material
 {
 public:
-	Vec3f albedo;
+	Vec4f albedo;
 	Vec3f diffuse;
 	float specularExp;
+	float refractiveIdx;
 	Material();
-	Material(const Vec3f &newAlbedo, const Vec3f &newDiffuse, const float newSpecularExp);
+	Material(const Vec4f &newAlbedo, const Vec3f &newDiffuse, const float newSpecularExp,
+		const float refractiveIdx);
 };
 
 class Object
