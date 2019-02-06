@@ -2,6 +2,8 @@
 #define OBJECT_HPP
 
 #include <cmath>
+#include <cassert>
+#include <initializer_list>
 #include "vec.hpp"
 
 class Material
@@ -23,7 +25,7 @@ public:
 
 public:
 	Object(const Material &newMaterial);
-	virtual bool intersect(const Vec3f &origin, const Vec3f &dir, float &t0) const = 0;
+	virtual bool intersect(const Vec3f &origin, const Vec3f &dir, float &t0, Vec3f &hit) const = 0;
 	virtual Vec3f normal(const Vec3f &point) const = 0;
 };
 
@@ -35,8 +37,19 @@ private:
 
 public:
 	Sphere(const Vec3f &newCenter, const float newRadius, const Material &newMaterial);
-	bool intersect(const Vec3f &origin, const Vec3f &dir, float &t0) const override;
+	bool intersect(const Vec3f &origin, const Vec3f &dir, float &t0, Vec3f &hit) const override;
 	Vec3f normal(const Vec3f &point) const override;
+};
+
+class Triangle: public Object
+{
+private:
+	Vec3f vertices[3];
+
+public:
+	Triangle (const std::initializer_list<Vec3f> newVertices, const Material &newMaterial);
+	bool intersect(const Vec3f &origin, const Vec3f &dir, float &t0, Vec3f &hit) const override;
+	Vec3f normal([[maybe_unused]] const Vec3f &point) const override;
 };
 
 class Light

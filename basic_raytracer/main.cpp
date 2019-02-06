@@ -19,11 +19,12 @@ bool sceneIntersect(const Vec3f &origin, const Vec3f &dir,
 	for (const auto &object : objects)
 	{
 		float newDist;
-		if (object->intersect(origin, dir, newDist) && newDist < dist)
+		Vec3f newHit;
+		if (object->intersect(origin, dir, newDist, newHit) && newDist < dist)
 		{
 			dist = newDist;
 			material = object->material;
-			hit = origin + dir * dist;
+			hit = newHit;
 			normal = object->normal(hit);
 		}
 	}
@@ -118,14 +119,21 @@ void render(const std::vector<std::unique_ptr<Object> > &objects,
 int main()
 {
 	const Material orange{{0.9f, 0.1f, 0.05f, 0.f}, {0.4f, 0.25f, 0.f}, 10.f, 1.f};
-	const Material lapis{{0.3f, 0.6f, 0.2f, 0.2f}, {0.f, 0.15f, 0.4f}, 50.f, 1.5f};
-	const Material diamond{{0.03f, 0.4f, 0.4f, 0.6f}, {0.f, 0.4f, 0.8f}, 1000.f, 2.5f};
+	const Material lapis{{0.3f, 0.6f, 0.2f, 0.3f}, {0.f, 0.15f, 0.4f}, 50.f, 1.5f};
+	const Material diamond{{0.1f, 0.4f, 0.2f, 0.8f}, {0.f, 0.4f, 0.8f}, 1000.f, 2.5f};
+
 	std::vector<std::unique_ptr<Object> > objects;
 	objects.push_back(std::make_unique<Sphere>(Vec3f{0.f, 0.f, 32.f}, 10.f, orange));
 	objects.push_back(std::make_unique<Sphere>(Vec3f{-3.f, 5.f, 20.f}, 5.f, diamond));
 	objects.push_back(std::make_unique<Sphere>(Vec3f{-15.f, -15.f, 30.f}, 7.f, orange));
 	objects.push_back(std::make_unique<Sphere>(Vec3f{10.f, 6.f, 23.f}, 4.f, lapis));
+	objects.push_back(std::make_unique<Triangle>(std::initializer_list<Vec3f>{Vec3f{0.f, 10.f, 50.f},
+											                  	              Vec3f{-15.f, 10.f, 13.f},
+												                              Vec3f{15.f, 10.f, 13.f}}, diamond));
 
+	objects.push_back(std::make_unique<Triangle>(std::initializer_list<Vec3f>{Vec3f{-25.f, -4.f, 30.f},
+											                  	              Vec3f{30.f, -10.f, 40.f},
+												                              Vec3f{-5, -15.f, 17.f}}, lapis));
 	std::vector<std::unique_ptr<Light> > lights;
 	lights.push_back(std::make_unique<Light>(Vec3f{15.f, 5.f, -20.f}, 1.f));
 	lights.push_back(std::make_unique<Light>(Vec3f{-3.f, 5.f, 10.f}, 2.5f));
