@@ -85,7 +85,7 @@ Vec3f castRay(const Vec3f &origin, const Vec3f &dir,
 void render(const std::vector<std::unique_ptr<Object> > &objects,
 	const std::vector<std::unique_ptr<Light> > &lights)
 {
-	const size_t width{1024};
+	const size_t width{1280};
 	const size_t height{768};
 	const std::string filename{"out.ppm"};
 	const float fov{1.7f};
@@ -131,7 +131,7 @@ int main()
 											                  	              Vec3f{-15.f, 10.f, 13.f},
 												                              Vec3f{15.f, 10.f, 13.f}}, diamond));
 
-	objects.push_back(std::make_unique<Triangle>(std::initializer_list<Vec3f>{Vec3f{-25.f, -4.f, 30.f},
+	objects.push_back(std::make_unique<Triangle>(std::initializer_list<Vec3f>{Vec3f{-25.f, -4.f, 25.f},
 											                  	              Vec3f{30.f, -10.f, 40.f},
 												                              Vec3f{-5, -15.f, 17.f}}, lapis));
 	std::vector<std::unique_ptr<Light> > lights;
